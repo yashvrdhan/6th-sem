@@ -1,0 +1,74 @@
+import math
+
+def mod_inverse(a, m):
+    if math.gcd(a, m) != 1:
+        return None  
+    for i in range(1, m):
+        if (a * i) % m == 1:
+            return i
+    return None
+
+def enc_mess(text, a, b):
+    if math.gcd(a, 26) != 1:
+        raise ValueError("Key 'a' must be coprime with 26.")
+
+    encr_text = ""
+    for char in text:
+        if char.isalpha():  
+            is_upper = char.isupper()
+            x = ord(char.upper()) - ord('A')  
+            encr_char = (a * x + b) % 26  
+            new_char = chr(encr_char + ord('A'))
+            encr_text += new_char if is_upper else new_char.lower()
+        else:
+            encr_text += char 
+
+    return encr_text
+
+# Decryption function
+def dec_mess(text, a, b):
+    a_inv = mod_inverse(a, 26)  
+    if a_inv is None:
+        raise ValueError("Modular inverse for 'a' does not exist. Choose a different 'a'.")
+
+    dec_text = ""
+    for char in text:
+        if char.isalpha():
+            is_upper = char.isupper()
+            y = ord(char.upper()) - ord('A')  
+            dec_char = (a_inv * (y - b)) % 26  
+            new_char = chr(dec_char + ord('A'))
+            dec_text += new_char if is_upper else new_char.lower()
+        else:
+            dec_text += char  
+
+    return dec_text
+
+
+text = input("Enter the text: ")
+a = int(input("Enter key 'a' (must be coprime with 26): "))
+b = int(input("Enter key 'b': "))
+
+encrypted_text = ""  
+
+while True:
+    print("\n1. Encrypt\n2. Decrypt\n3. Exit")
+    choice = int(input("Enter your choice: "))
+
+    if choice == 1:
+        encrypted_text = enc_mess(text, a, b)
+        print(f"Encrypted Text: {encrypted_text}")
+
+    elif choice == 2:
+        if encrypted_text:Y
+            decrypted_text = dec_mess(encrypted_text, a, b)
+            print(f"Decrypted Text: {decrypted_text}")
+        else:
+            print("No encrypted text found. Encrypt first.")
+
+    elif choice == 3:
+        print("Exiting...")
+        break  
+
+    else:
+        print("Invalid choice. Please enter 1, 2, or 3.")
