@@ -1,0 +1,39 @@
+%{
+#include <stdio.h>
+#include <ctype.h>
+
+int lines = 0, words = 0, characters = 0, whitespaces = 0;
+FILE *output;
+%}
+
+%%
+
+\n             { lines++; characters++; whitespaces++; }
+[ \t]+        { whitespaces += yyleng; }
+[a-zA-Z0-9]+  { words++; characters += yyleng; }
+.             { characters++; }
+
+%%
+
+int main() {
+    FILE *input = fopen("input.txt", "r");
+    output = fopen("output.txt", "w");
+    if (!input || !output) {
+        printf("Error opening file!\n");
+        return 1;
+    }
+    yyin = input;
+    yylex();
+    fprintf(output, "Lines: %d\n", lines);
+    fprintf(output, "Words: %d\n", words);
+    fprintf(output, "Characters: %d\n", characters);
+    fprintf(output, "Whitespaces: %d\n", whitespaces);
+    fclose(input);
+    fclose(output);
+    printf("Processing complete. Check output.txt for results.\n");
+    return 0;
+}
+
+int yywrap() {
+    return 1;
+}
